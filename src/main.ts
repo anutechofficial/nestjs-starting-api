@@ -9,6 +9,7 @@ async function bootstrap() {
   .setDescription('ITS A REST API')
   .setVersion('1.0')
   .addTag('REST')
+  .addBasicAuth()
   .build();
 const document = SwaggerModule.createDocument(app, config);
 SwaggerModule.setup('api', app, document);
