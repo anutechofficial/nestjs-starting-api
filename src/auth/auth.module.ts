@@ -3,10 +3,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
-import { UsersService } from 'src/users/users.service';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './local.strategy';
 
 
 @Module({
@@ -18,9 +19,10 @@ import { UsersModule } from 'src/users/users.module';
     signOptions: { expiresIn: '1h' },
   }),
 UsersModule,
+PassportModule,
 ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService,LocalStrategy],
   exports:[AuthService]
 })
 export class AuthModule {}

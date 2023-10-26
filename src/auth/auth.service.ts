@@ -22,4 +22,8 @@ constructor(
       access_token: await this.jwtService.signAsync(payload),
     };;
   }
+
+    async validateUser(username, password){
+        return "";
+    }
 }
