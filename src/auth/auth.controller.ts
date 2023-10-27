@@ -3,11 +3,14 @@ import { AuthService } from './auth.service';
 import { signInDto } from './dto/signin.dto';
 import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UsersService } from 'src/users/users.service';
 
 
 @Controller('auth')
 export class AuthController {
-constructor(private authService:AuthService){}
+constructor(private authService:AuthService,
+    private userService:UsersService,
+    ){}
 
 @HttpCode(HttpStatus.OK)
 @Post('login')
@@ -16,14 +19,11 @@ SignIn(@Body() signInDto: signInDto){
 }
 
 
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
-@Get('profile')
- getProfile(@Request() req){
-
-    return req.user;
- }
+  @Get('profile')
+  getProfile(@Request() req) {
+    const user= this.userService.findAll();
+    return user;
+  }
 }
-// function Get(arg0: string): (target: AuthController, propertyKey: "getProfile", descriptor: TypedPropertyDescriptor<() => void>) => void | TypedPropertyDescriptor<() => void> {
-//     throw new Error('Function not implemented.');
-// }
-
