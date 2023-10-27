@@ -30,8 +30,8 @@ export class UsersService {
     return `Users Found ${foundUser}`;
   }
 
-   async findOne(id: string) {
-    const foundUser=await  this.userModel.findById(id);
+   async findOne(username) {
+    const foundUser=await  this.userModel.findOne({username});
     return `User details ${foundUser}`;
   }
 

@@ -4,7 +4,7 @@ import { signInDto } from './dto/signin.dto';
 import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from 'src/users/users.service';
-
+import { loggedInUser } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +22,8 @@ SignIn(@Body() signInDto: signInDto){
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    const user= this.userService.findAll();
+   async getProfile(@Request() req) {
+    const user= await this.userService.findOne(loggedInUser.username);
     return user;
   }
 }
