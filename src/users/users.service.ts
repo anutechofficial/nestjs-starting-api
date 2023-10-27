@@ -30,6 +30,10 @@ export class UsersService {
     return `Users Found ${foundUser}`;
   }
 
+   async findById(id:string) {
+    const foundUser=await  this.userModel.findById(id);
+    return `User details ${foundUser}`;
+  }
    async findOne(username) {
     const foundUser=await  this.userModel.findOne({username});
     return `User details ${foundUser}`;
@@ -41,7 +45,6 @@ export class UsersService {
   }
 
   async remove(id: string) {
-
     const deletedUser=await this.userModel.findByIdAndDelete(id);
     return `Deleted User ${deletedUser}`;
   }
