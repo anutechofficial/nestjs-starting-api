@@ -15,24 +15,29 @@ export class ProductsController {
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
-
+  
+  @ApiOperation({ summary: 'Get all Product' })
   @Get()
   findAll() {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+  @ApiOperation({ summary: 'Get by productId' })
+  @Get(':productId')
+  findOne(@Param('productId') productId: number) {
+    return this.productsService.findOne(productId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  @ApiOperation({ summary: 'Update Product' })
+  @Patch(':productId')
+  update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
+    const updatedProduct=  this.productsService.update(productId, updateProductDto);
+    return updatedProduct;
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  @ApiOperation({ summary: 'Delete Product' })
+  @Delete(':productId')
+  remove(@Param('productId') productId: number) {
+    return this.productsService.remove(productId);
   }
 }

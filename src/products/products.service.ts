@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 export class ProductsService {
   constructor(@InjectModel(Product.name) private productModel:Model<Product>){}
   async create(createProductDto: CreateProductDto,) {
+    try{
     const productId=createProductDto.productId;
     const isProductExist=await this.productModel.findOne({productId});
       
@@ -16,21 +17,63 @@ export class ProductsService {
           throw new BadRequestException('Product with same productId Already Exists!');
         }
           const createdProduct=await this.productModel.create(createProductDto);
-          return createdProduct;
+          return `Created Product Details: ${createdProduct}`;
       }
-  findAll() {
-    return `This action returns all products`;
+      catch{
+        return `Somthing went Wrong!`
+      }
+    }
+  async findAll() {
+    try{ 
+      const products= await this.productModel.find();
+      return products;
+    }
+    catch{
+      return `Somthing went Wrong!`
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(productId: number) {
+    try{
+      const product=await this.productModel.findOne({productId});
+      if(product){
+        return `Product Found ${product}`
+      }
+       return `No product with this id: ${productId}`;
+      }
+     catch{
+      return "Product not found!";
+    }
+    
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(productId: number, updateProductDto: UpdateProductDto) {
+    try{
+      const updatedProduct= await this.productModel.findOneAndUpdate({productId},updateProductDto);
+      if(updatedProduct){
+        return `Updated Product ${updatedProduct}`;
+      }
+      else{
+        return `No Product with id: ${productId}`
+      }
+    }catch{
+      return `Somthing went wrong!`
+    } 
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(productId: number) {
+    try{
+      const deletedProduct=await this.productModel.findOneAndDelete({productId});
+      if(deletedProduct){
+        return deletedProduct;
+      }
+      else{
+        return `No Product with id :${productId}`;
+      }
+    }
+    catch{
+      return `Somthing went wrong!`;
+    }
+   
   }
 }
