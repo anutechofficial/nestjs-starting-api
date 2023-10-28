@@ -15,8 +15,12 @@ export class CreateProductDto {
     productDescription:string;
 
     @ApiProperty()
-    @IsString() // Validate each metadata object
-    metadata: string[];
+     @IsObject({ each: true }) // Validate each metadata object
+     metadata: Array<{
+    productId: number;
+    productStripeID: string; // Add productStripeID
+    // Other metadata fields
+      }>;
 
     
     @ApiProperty()

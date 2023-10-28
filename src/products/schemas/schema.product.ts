@@ -10,8 +10,18 @@ export class Product {
   @Prop()
   productDescription:string;
 
-  @Prop([String])
-  metadata:string[];
+  @Prop([
+    {
+      productId: Number,
+      productStripeID: String, // Define productStripeID in the schema
+      // Other metadata fields here
+    },
+  ])
+  metadata: Array<{
+    productId: number;
+    productStripeID: string;
+    // Other metadata fields
+  }>;
 
   @Prop({type:Date, default:Date.now})
   createdDate:Date;
