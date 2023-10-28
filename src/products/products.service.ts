@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Product, ProductSchema } from './schemas/schema.product';
+import { Product } from './schemas/schema.product';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
