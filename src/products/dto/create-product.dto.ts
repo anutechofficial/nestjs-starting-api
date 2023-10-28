@@ -4,6 +4,11 @@ import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString, Length } from "class
 export class CreateProductDto {
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsNumber()
+    productId:number;
+
+    @ApiProperty()
     @Length(8,250)
     @IsNotEmpty()
     @IsString()
@@ -12,16 +17,8 @@ export class CreateProductDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
+    @Length(8,500)
     productDescription:string;
-
-    @ApiProperty()
-     @IsObject({ each: true }) // Validate each metadata object
-     metadata: Array<{
-    productId: number;
-    productStripeID: string; // Add productStripeID
-    // Other metadata fields
-      }>;
-
     
     @ApiProperty()
     @IsNotEmpty()

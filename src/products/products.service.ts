@@ -9,8 +9,8 @@ import { Model } from 'mongoose';
 export class ProductsService {
   constructor(@InjectModel(Product.name) private productModel:Model<Product>){}
   async create(createProductDto: CreateProductDto,) {
-    const productId=createProductDto.metadata[0];
-    const isProductExist=await this.productModel.findOne({ 'metadata.productId': productId});
+    const productId=createProductDto.productId;
+    const isProductExist=await this.productModel.findOne({productId});
       
       if (isProductExist){
           throw new BadRequestException('Product with same productId Already Exists!');
