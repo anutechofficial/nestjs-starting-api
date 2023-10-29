@@ -43,8 +43,7 @@ export class ProductsService {
       }
      catch{
       return "Product not found!";
-    }
-    
+    }   
   }
 
   async update(productId: number, updateProductDto: UpdateProductDto) {
@@ -73,7 +72,6 @@ export class ProductsService {
     }
     catch{
       return `Somthing went wrong!`;
-    }
-   
+    }  
   }
 }
