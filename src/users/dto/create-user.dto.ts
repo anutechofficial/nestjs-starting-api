@@ -20,7 +20,7 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @Length(8,50)
-    @IsPassword({message:'Create Strong Password!'})
+    @IsPassword({message:'Create Strong Password use Special characters'})
     @ApiProperty()
     password:string;
 }

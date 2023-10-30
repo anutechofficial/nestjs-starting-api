@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
@@ -32,26 +32,56 @@ export class UsersService {
   }
 
   async findAll() {
-    const foundUser=await this.userModel.find();
-    return `Users Found ${foundUser}`;
+    try{
+      const foundUser=await this.userModel.find();
+      return `Users Found ${foundUser}`;
+    }catch{
+      throw new NotFoundException;
+    }
   }
 
    async findById(id:string) {
-    const foundUser=await  this.userModel.findById(id);
-    return `User details ${foundUser}`;
+    try{
+      const foundUser=await  this.userModel.findById(id);
+      return `User details ${foundUser}`;
+    }catch{
+     throw new BadRequestException("No User with this Id");
+    } 
   }
+
    async findOne(username:string) {
     const foundUser=await  this.userModel.findOne({username});
     return `User details ${foundUser}`;
   }
 
    async update(id: string, updateUserDto: UpdateUserDto) {
-    const updatedUser=await this.userModel.findByIdAndUpdate(id, updateUserDto);
-    return `Updated User ${updatedUser}`;
+    try{
+      const isExist= await this.userModel.findById(id).exec();
+      if(isExist){
+        const saltOrRounds = 10;
+        const password = updateUserDto.password;
+        const hash = await bcrypt.hash(password, saltOrRounds);
+        updateUserDto.password=hash;
+        const updatedUser=await this.userModel.findByIdAndUpdate(id, updateUserDto);
+        return `Updated User ${updatedUser}`;
+      }
+      throw new BadRequestException("Somthing Went wrong!");
+    } catch
+    {
+      throw new BadRequestException("No User with this id");
+    }
   }
 
-  async remove(id: string) {
-    const deletedUser=await this.userModel.findByIdAndDelete(id);
-    return `Deleted User ${deletedUser}`;
+  async remove(id:string) {
+    try{
+      const isUserExist=await this.userModel.findOne({_id:id});
+      if(isUserExist){
+        const deletedUser=await this.userModel.findByIdAndDelete(id);
+        return `Deleted User ${deletedUser}`;
+      }
+      throw new BadRequestException("Somthing Went wrong!");
+    }catch{
+      throw new BadRequestException("No User with this Id!");
+    }
   }
 }

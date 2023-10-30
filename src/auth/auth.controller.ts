@@ -24,7 +24,7 @@ SignIn(@Body() signInDto: signInDto){
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
   @Get('profile')
-   async getProfile(@Request() req) {
+   async getProfile() {
     const user= await this.userService.findOne(loggedInUser.username);
     return user;
   }
