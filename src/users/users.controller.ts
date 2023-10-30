@@ -4,16 +4,27 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { OtpDto } from './dto/otp-verification.dto';
+import { EmailService } from 'src/email/email.service';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService,
+    ) {}
   
   @ApiOperation({summary: 'SignUp User'})
-  @Post()
+  @Post('signup')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @ApiOperation({summary:'Verify Email OTP'})
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post('verify')
+  getOPT(@Body() otpDto:OtpDto){
+    return this.usersService.verifyOtp(otpDto.otp);
   }
 
   @ApiOperation({summary: 'Get All User from DB'})

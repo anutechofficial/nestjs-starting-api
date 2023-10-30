@@ -6,7 +6,6 @@ import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
-import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 
 
@@ -19,7 +18,6 @@ import { LocalStrategy } from './local.strategy';
     signOptions: { expiresIn: '8h' },
   }),
 UsersModule,
-PassportModule,
 ],
   controllers: [AuthController],
   providers: [AuthService,LocalStrategy],
