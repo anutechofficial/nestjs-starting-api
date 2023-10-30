@@ -4,6 +4,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
@@ -21,6 +23,10 @@ export class UsersService {
           throw new BadRequestException('Email already Exists!');
         }
       }
+        const saltOrRounds = 10;
+        const password = createUserDto.password;
+        const hash = await bcrypt.hash(password, saltOrRounds);
+        createUserDto.password=hash;
         const createdUser= await this.userModel.create(createUserDto);
         return createdUser;   
   }
@@ -34,7 +40,7 @@ export class UsersService {
     const foundUser=await  this.userModel.findById(id);
     return `User details ${foundUser}`;
   }
-   async findOne(username) {
+   async findOne(username:string) {
     const foundUser=await  this.userModel.findOne({username});
     return `User details ${foundUser}`;
   }
