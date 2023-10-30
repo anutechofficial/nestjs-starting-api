@@ -5,7 +5,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { OtpDto } from './dto/otp-verification.dto';
-import { EmailService } from 'src/email/email.service';
+import { ChangePwdDto } from './dto/change-pwd.dto';
+import { NewPwdDto } from './dto/newPwd.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -27,6 +28,20 @@ export class UsersController {
     return this.usersService.verifyOtp(otpDto.otp);
   }
 
+  @ApiOperation({summary: 'Forget Password!'})
+  @Post('forgotPassword')
+  changePassword(@Body() changePwdDto:ChangePwdDto){
+    return this.usersService.changePwd(changePwdDto.username);
+  }
+
+  @ApiOperation({summary:'Enter New Password!'})
+  @ApiBearerAuth()
+  @Post('newPassword')
+  @UseGuards(AuthGuard)
+  nterNewPwd(@Body() newPwsDto:NewPwdDto){
+    return this.usersService.enterNewPwd(newPwsDto.otp,newPwsDto.password);
+  }
+  
   @ApiOperation({summary: 'Get All User from DB'})
   @ApiBearerAuth()
   @UseGuards(AuthGuard)

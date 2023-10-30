@@ -45,8 +45,9 @@ export class UsersService {
         };
         //send otp to mail
         await this.emailService.sendEmail(mailOptions)
-        const saltOrRounds = 10;
+        
         //Hash password
+        const saltOrRounds = 10;
         const password = createUserDto.password;
         const hash = await bcrypt.hash(password, saltOrRounds);
         createUserDto.password=hash;
@@ -132,6 +133,43 @@ export class UsersService {
     }
     else{
       return "Email already verifyed!"
+    }
+  }
+
+  async changePwd(username:string){
+    const isUser= await this.userModel.findOne({username});
+    if(isUser){
+      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
+      isUser.otp=random4DigitNumber;
+      await this.userModel.findOneAndUpdate({username},isUser);
+      const forgotpayload={username:username, email:isUser.email}
+      const forgotToken= await this.jwtService.signAsync(forgotpayload);
+      const mailOptions = {
+        from: 'anurag.yadav.henceforth@gmail.com',
+        to:isUser.email,
+        subject:'Reset Your Password',
+        text:`Hello @${username} this is Your Verification OTP to Reset Password: ${random4DigitNumber}`,
+      };
+      await this.emailService.sendEmail(mailOptions)
+      return {message:'OTP send to Your Registered Email ID Verify and Enter New Password1',Token:forgotToken};
+    }
+    else{
+        return `@${username} Not Found Enter correct @username`
+    }
+  }
+
+  async enterNewPwd(otp:number,password:string){
+    const {username}=loggedInUser;
+    const loggedUser= await this.userModel.findOne({username});
+    if(loggedUser.otp==otp){
+      const saltOrRounds=10;
+      const hash = await bcrypt.hash(password, saltOrRounds);
+      loggedUser.password=hash;
+      await this.userModel.findOneAndUpdate({username},loggedUser);
+      return "Password Updated Succesfully!"
+    }
+    else{
+      return "Double Check Your OTP!"
     }
   }
 }
