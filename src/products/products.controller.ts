@@ -3,12 +3,15 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { StripeService } from 'src/stripe/stripe.service';
 
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService,
+    private stripeService:StripeService,
+    ) {}
 
   @ApiOperation({ summary: 'Create Product' })
   @Post()

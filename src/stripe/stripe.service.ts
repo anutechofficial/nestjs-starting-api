@@ -17,5 +17,41 @@ export class StripeService {
         return customer.id;
     }
 
-    async 
+    async createPriceId(
+        currency:string,
+        amount:number,
+        produstStripeId:string,
+
+        ){
+            const price = await this.stripe.prices.create({
+                unit_amount_decimal:`${amount*100}`,
+                currency: currency,
+                product: produstStripeId,
+                billing_scheme:'per_unit',
+              });
+              return price.id;
+    }
+
+    async createProduct(
+        productName:string,
+        productDescription:string,
+        active:boolean, 
+        productImages:string[]
+        ){
+            const product = await this.stripe.products.create({
+                name: productName,
+                description:productDescription,
+                active:active,
+                images:productImages
+              })
+        return product.id;
+    }
+
+    async updateProduct(productStripeId:string,stripePriceId:string){
+        const product = await this.stripe.products.update(
+            productStripeId,
+            {default_price:stripePriceId}
+          );
+            return product;
+    }
 }

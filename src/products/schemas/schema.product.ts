@@ -12,6 +12,9 @@ export class Product {
   productName: string;
 
   @Prop()
+  active:boolean;
+
+  @Prop()
   productDescription:string;
 
   @Prop({type:Date, default:Date.now})
@@ -21,12 +24,15 @@ export class Product {
   productImages:string[];
 
   @Prop()
-  productPrice:number;
-  
-  @Prop()
-  stripePriceId:string;
+  productPriceAmount:number;
 
   @Prop()
+  currency:string;
+  
+  @Prop()
   stripeProductId:string;
+
+  @Prop()
+  stripePriceId:string;
 }
 export const ProductSchema = SchemaFactory.createForClass(Product);
