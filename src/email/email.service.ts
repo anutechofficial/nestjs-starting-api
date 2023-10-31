@@ -9,14 +9,15 @@ export class EmailService {
     this.transporter = nodemailer.createTransport({
       service: 'Gmail', // You can also use other providers
       auth: {
-        user: 'anurag.yadav.henceforth@gmail.com',
-        pass: 'wzkh cyft qzwc ityn',
+        user: process.env.OUT_EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
   }
 
   async sendEmail(mailOptions) {
     await this.transporter.sendMail(mailOptions);
+    return true;
   }
 }
 

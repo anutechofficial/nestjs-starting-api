@@ -6,6 +6,7 @@ import { User, UserSchema} from './schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/constants';
 import { EmailModule } from 'src/email/email.module';
+import { StripeModule } from 'src/stripe/stripe.module';
 
 @Module({
   imports:[MongooseModule.forFeature([{ name: User.name, schema:UserSchema}]),
@@ -15,6 +16,8 @@ import { EmailModule } from 'src/email/email.module';
     signOptions: { expiresIn: '8h' },
   }),
   EmailModule,
+  StripeModule,
+
 ],
   controllers: [UsersController],
   providers: [UsersService],

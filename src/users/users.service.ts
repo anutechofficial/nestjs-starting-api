@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { loggedInUser } from 'src/auth/auth.guard';
 import { EmailService } from 'src/email/email.service';
+import { StripeService } from 'src/stripe/stripe.service';
 
 
 
@@ -16,6 +17,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel:Model<User>,
   private jwtService:JwtService,
   private emailService:EmailService,
+  private stripeService:StripeService,
   ){}
 
   async create(createUserDto: CreateUserDto) {
@@ -30,29 +32,31 @@ export class UsersService {
           throw new BadRequestException('Email already Exists!');
         }
       }
-        const signupPayload={username:createUserDto.username, email:createUserDto.email};
-        //Token to verify later
-        const signupToken= await this.jwtService.signAsync(signupPayload);
         //Randon number for OTP
         const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
         createUserDto.otp=random4DigitNumber;
         //Mail configuration
         const mailOptions = {
-          from: 'anurag.yadav.henceforth@gmail.com',
+          from: process.env.OUT_EMAIL,
           to:createUserDto.email,
           subject:'Verify Your Email',
           text:`Welcome @${createUserDto.username} this is Your Verification OTP: ${random4DigitNumber}`,
         };
-        //send otp to mail
-        await this.emailService.sendEmail(mailOptions)
-        
         //Hash password
         const saltOrRounds = 10;
         const password = createUserDto.password;
         const hash = await bcrypt.hash(password, saltOrRounds);
         createUserDto.password=hash;
+        //Create Stripe Customer id
+        const userStripeId= await this.stripeService.createCustomer(createUserDto.name,createUserDto.email);
+        createUserDto.userStripeId=userStripeId;
+        //send otp to mail
+        const isMailSend= await this.emailService.sendEmail(mailOptions)
         //save user data to DB
         const createdUser= await this.userModel.create(createUserDto);
+        //Token to verify later
+        const signupPayload={username:createUserDto.username, email:createUserDto.email};
+        const signupToken= await this.jwtService.signAsync(signupPayload);
         if(createdUser){
           return {message:"OTP send to your email", token:signupToken,}
           //`OTP Send to your email enter to verify. Token :${signupToken}`
@@ -151,7 +155,7 @@ export class UsersService {
       const forgotpayload={username:username, email:isUser.email}
       const forgotToken= await this.jwtService.signAsync(forgotpayload);
       const mailOptions = {
-        from: 'anurag.yadav.henceforth@gmail.com',
+        from: process.env.OUT_EMAIL,
         to:isUser.email,
         subject:'Reset Your Password',
         text:`Hello @${username} this is Your Verification OTP to Reset Password: ${random4DigitNumber}`,

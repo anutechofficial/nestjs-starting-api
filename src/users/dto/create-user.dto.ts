@@ -24,6 +24,8 @@ export class CreateUserDto {
     @ApiProperty()
     password:string;
     
-    @IsNotEmpty()
+    
     otp:number;
+
+    userStripeId:string;
 }
