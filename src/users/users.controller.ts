@@ -43,7 +43,6 @@ export class UsersController {
   }
   
   @ApiOperation({summary: 'Get All User from DB'})
-  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get()
   findAll() {

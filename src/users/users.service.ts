@@ -137,8 +137,9 @@ export class UsersService {
   }
 
   async changePwd(username:string){
-    const isUser= await this.userModel.findOne({username});
-    if(isUser){
+    try{ 
+      const isUser= await this.userModel.findOne({username});
+      if(isUser){
       const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
       isUser.otp=random4DigitNumber;
       await this.userModel.findOneAndUpdate({username},isUser);
@@ -150,11 +151,14 @@ export class UsersService {
         subject:'Reset Your Password',
         text:`Hello @${username} this is Your Verification OTP to Reset Password: ${random4DigitNumber}`,
       };
-      await this.emailService.sendEmail(mailOptions)
-      return {message:'OTP send to Your Registered Email ID Verify and Enter New Password1',Token:forgotToken};
+      await this.emailService.sendEmail(mailOptions);
+      return {message:'OTP send to Your Registered Email ID Verify and Enter New Password',Token:forgotToken};
     }
     else{
         return `@${username} Not Found Enter correct @username`
+    }
+    }catch{
+      return "Somthing Went wrong!";
     }
   }
 

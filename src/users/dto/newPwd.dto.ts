@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsString, Length,} from "class-validator";
+import { IsNotEmpty, IsNumber, Length,} from "class-validator";
 import { IsPassword } from "./password.decorator";
 
 export class NewPwdDto {
