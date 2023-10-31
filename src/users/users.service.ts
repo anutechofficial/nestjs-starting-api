@@ -80,7 +80,12 @@ export class UsersService {
 
    async findOne(username:string) {
     const foundUser=await  this.userModel.findOne({username});
-    return `User details ${foundUser}`;
+    return {
+      Name:foundUser.name,
+      Username:foundUser.username,
+      EmailId:foundUser.email,
+      EmailVerified:foundUser.isVerified,
+    };
   }
 
    async update(id: string, updateUserDto: UpdateUserDto) {

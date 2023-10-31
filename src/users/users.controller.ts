@@ -50,7 +50,7 @@ export class UsersController {
   }
 
   @ApiOperation({summary: 'Get UserById'})
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -66,7 +66,7 @@ export class UsersController {
   }
   
   @ApiOperation({summary: 'Delete UserById'})
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
