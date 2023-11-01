@@ -9,7 +9,7 @@ export class EmailService {
     this.transporter = nodemailer.createTransport({
       service: 'Gmail', // You can also use other providers
       auth: {
-        user: process.env.OUT_EMAIL,
+        user: process.env.OUR_EMAIL,
         pass: process.env.EMAIL_PASSWORD,
       },
     });

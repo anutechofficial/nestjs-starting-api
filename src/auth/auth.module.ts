@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt/dist';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/users/users.module';
 import { LocalStrategy } from './local.strategy';
+import { StripeModule } from 'src/stripe/stripe.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { LocalStrategy } from './local.strategy';
     signOptions: { expiresIn: '8h' },
   }),
 UsersModule,
+StripeModule,
 ],
   controllers: [AuthController],
   providers: [AuthService,LocalStrategy],

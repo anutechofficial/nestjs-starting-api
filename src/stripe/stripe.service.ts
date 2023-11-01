@@ -54,4 +54,34 @@ export class StripeService {
           );
             return product;
     }
+
+    async createAccount(email:string,){
+        const account = await this.stripe.accounts.createExternalAccount({
+            type: 'custom',
+            country: "US",
+            email: email,
+            business_type:'non_profit',
+            tos_acceptance:{
+                date:Date.now(),
+                ip:'122.173.31.170',
+            },
+            capabilities: {
+              card_payments: {requested: true},
+              transfers: {requested: true},
+            },
+          });
+          return account;
+    }
+    async creckoutSession(priceId:string, customerStripeId:string,quantity:number){
+        const session = await this.stripe.checkout.sessions.create({
+            success_url: 'https://example.com/success',
+            line_items: [
+              {price: priceId, quantity:quantity },
+            ],
+            mode: 'payment',
+            cancel_url:'https://example.com/success',
+            customer:customerStripeId,
+          });
+          return session;
+    }
 }

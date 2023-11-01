@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/constants';
 import { EmailModule } from 'src/email/email.module';
 import { StripeModule } from 'src/stripe/stripe.module';
+import { ProductsModule } from 'src/products/products.module';
 
 @Module({
   imports:[MongooseModule.forFeature([{ name: User.name, schema:UserSchema}]),
@@ -17,6 +18,7 @@ import { StripeModule } from 'src/stripe/stripe.module';
   }),
   EmailModule,
   StripeModule,
+  ProductsModule,
 
 ],
   controllers: [UsersController],

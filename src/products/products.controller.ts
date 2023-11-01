@@ -3,14 +3,12 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { StripeService } from 'src/stripe/stripe.service';
 
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService,
-    private stripeService:StripeService,
     ) {}
 
   @ApiOperation({ summary: 'Create Product' })
@@ -28,7 +26,8 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get by productId' })
   @Get(':productId')
   findOne(@Param('productId') productId: number) {
-    return this.productsService.findOne(productId);
+    const productDetails= this.productsService.findByProductId(productId);
+    return productDetails;
   }
 
   @ApiOperation({ summary: 'Update Product' })

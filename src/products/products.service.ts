@@ -46,11 +46,11 @@ export class ProductsService {
     }
   }
 
-  async findOne(productId: number) {
+  async findPriceIdByProductId(productId: number) {
     try{
       const product=await this.productModel.findOne({productId});
       if(product){
-        return `Product Found ${product}`
+        return product.stripePriceId;
       }
        return `No product with this id: ${productId}`;
       }
@@ -58,7 +58,7 @@ export class ProductsService {
       return "Product not found!";
     }   
   }
-
+  
   async update(productId: number, updateProductDto: UpdateProductDto) {
     try{
       const updatedProduct= await this.productModel.findOneAndUpdate({productId},updateProductDto);
@@ -86,5 +86,17 @@ export class ProductsService {
     catch{
       return `Somthing went wrong!`;
     }  
+  }
+
+  async findByProductId(productId:number){
+    try{
+      const product=await this.productModel.findOne({productId});
+      if(product){
+        return product;
+      }
+      return "No Product Found!"
+    } catch{
+      return "Somthing Went Wrong!"
+    } 
   }
 }

@@ -27,5 +27,8 @@ export class User {
 
   @Prop()
   userStripeId:string;
+
+  @Prop()
+  userStripeAccount:string;
 }
 export const UserSchema = SchemaFactory.createForClass(User);

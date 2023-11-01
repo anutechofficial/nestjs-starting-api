@@ -9,12 +9,14 @@ import { JwtService } from '@nestjs/jwt';
 import { loggedInUser } from 'src/auth/auth.guard';
 import { EmailService } from 'src/email/email.service';
 import { StripeService } from 'src/stripe/stripe.service';
+import { ProductsService } from 'src/products/products.service';
 
 
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel:Model<User>,
+  private productService:ProductsService,
   private jwtService:JwtService,
   private emailService:EmailService,
   private stripeService:StripeService,
@@ -37,7 +39,7 @@ export class UsersService {
         createUserDto.otp=random4DigitNumber;
         //Mail configuration
         const mailOptions = {
-          from: process.env.OUT_EMAIL,
+          from: process.env.OUR_EMAIL,
           to:createUserDto.email,
           subject:'Verify Your Email',
           text:`Welcome @${createUserDto.username} this is Your Verification OTP: ${random4DigitNumber}`,
@@ -52,6 +54,7 @@ export class UsersService {
         createUserDto.userStripeId=userStripeId;
         //send otp to mail
         const isMailSend= await this.emailService.sendEmail(mailOptions)
+        //Create customer account
         //save user data to DB
         const createdUser= await this.userModel.create(createUserDto);
         //Token to verify later
@@ -82,14 +85,18 @@ export class UsersService {
     } 
   }
 
-   async findOne(username:string) {
-    const foundUser=await  this.userModel.findOne({username});
-    return {
-      Name:foundUser.name,
-      Username:foundUser.username,
-      EmailId:foundUser.email,
-      EmailVerified:foundUser.isVerified,
-    };
+   async findLoggedInProfile(username:string) {
+    try{
+      const foundUser=await  this.userModel.findOne({username});
+      return {
+        Name:foundUser.name,
+        Username:foundUser.username,
+        EmailId:foundUser.email,
+        EmailVerified:foundUser.isVerified,
+      };
+    }catch{
+      return "Somthing went wrong!"
+    }
   }
 
    async update(id: string, updateUserDto: UpdateUserDto) {
@@ -155,7 +162,7 @@ export class UsersService {
       const forgotpayload={username:username, email:isUser.email}
       const forgotToken= await this.jwtService.signAsync(forgotpayload);
       const mailOptions = {
-        from: process.env.OUT_EMAIL,
+        from: process.env.OUR_EMAIL,
         to:isUser.email,
         subject:'Reset Your Password',
         text:`Hello @${username} this is Your Verification OTP to Reset Password: ${random4DigitNumber}`,
@@ -197,7 +204,7 @@ export class UsersService {
       userDetails.otp=random4DigitNumber;
       await this.userModel.findOneAndUpdate({username},userDetails);
       const mailOptions = {
-        from: process.env.OUT_EMAIL,
+        from: process.env.OUR_EMAIL,
         to:userDetails.email,
         subject:'Verify your Email',
         text:`Hello @${username} this is Your Verification OTP to Verify Email: ${random4DigitNumber}`,
@@ -207,5 +214,28 @@ export class UsersService {
     }catch{
       return "Somthing Went Wrong!"
     }
+  }
+
+  async createStripeAccount(email=loggedInUser.email){
+      const account = await this.stripeService.createAccount(email);
+      console.log(email);
+      return account;
+  }
+
+  async byProduct(productId:number,quantity:number){
+      const username=loggedInUser.username;
+      const userDetails= await this.userModel.findOne({username});
+      if(userDetails){
+        const {userStripeId}=userDetails;
+        const productPriceId= await this.productService.findPriceIdByProductId(productId);
+        if(productPriceId){
+          const checkoutSession= await this.stripeService.creckoutSession(productPriceId,userStripeId,quantity);
+          return checkoutSession.url;
+        }
+        else{
+          return "Product Not found!"
+        }
+      }
+      return 'There are some issue try login again!'
   }
 }

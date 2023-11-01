@@ -7,11 +7,15 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { OtpDto } from './dto/otp-verification.dto';
 import { ChangePwdDto } from './dto/change-pwd.dto';
 import { NewPwdDto } from './dto/newPwd.dto';
+import { loggedInUser } from 'src/auth/auth.guard';
+import { StripeService } from 'src/stripe/stripe.service';
+import { BuyProductDto } from './dto/buy-product.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService,
+    private stripeService:StripeService,
     ) {}
   
   @ApiOperation({summary: 'SignUp User'})
@@ -71,5 +75,21 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @ApiOperation({summary: 'createStripeAccount'})
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('createStripeAccount')
+  createAccount() {
+    return this.stripeService.createAccount(loggedInUser.email);
+  }
+
+  @ApiOperation({summary:'buyProduct'})
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post('buyProduct')
+  buyProduct(@Body() buyProductDto:BuyProductDto){
+    return this.usersService.byProduct(buyProductDto.productId,buyProductDto.quantity);
   }
 }
