@@ -3,6 +3,6 @@ import { IsNumber,} from "class-validator";
 
 export class OtpDto {
     @ApiProperty()
-    @IsNumber()
-    otp:number
+    // @IsNumber()
+    otp:number;
 }

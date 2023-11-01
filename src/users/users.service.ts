@@ -132,12 +132,17 @@ export class UsersService {
   async verifyOtp(userOtp:number){
     const username=loggedInUser.username;
     const userDetails= await this.userModel.findOne({username})
-
     if(userDetails.isVerified==false){
-      const {otp}=userDetails;
-      if(userOtp==otp){
-       userDetails.isVerified=true;
-        const verifyedUser= await this.userModel.findByIdAndUpdate(userDetails._id,userDetails);
+      const {otp,username}=userDetails;
+      if(userOtp===otp){
+        const verifyedUser= await this.userModel.findOneAndUpdate({username},{
+          $set: {
+            isVerified: true,
+          },
+          $unset: {
+            otp: 1,
+          },
+        });
         if(verifyedUser){
           return "Email verifyed Successfully!"
         }
@@ -181,15 +186,21 @@ export class UsersService {
   async enterNewPwd(otp:number,password:string){
     const {username}=loggedInUser;
     const loggedUser= await this.userModel.findOne({username});
-    if(loggedUser.otp==otp){
+    if(loggedUser.otp===otp){
       const saltOrRounds=10;
       const hash = await bcrypt.hash(password, saltOrRounds);
-      loggedUser.password=hash;
-      await this.userModel.findOneAndUpdate({username},loggedUser);
+      await this.userModel.findOneAndUpdate({username},{
+        $set: {
+          password: hash,
+        },
+        $unset: {
+          otp: 1,
+        },
+      });
       return "Password Updated Succesfully!"
     }
     else{
-      return "Double Check Your OTP!"
+      return "Invailid OTP!"
     }
   }
 
