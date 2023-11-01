@@ -47,16 +47,10 @@ export class ProductsService {
   }
 
   async findPriceIdByProductId(productId: number) {
-    try{
       const product=await this.productModel.findOne({productId});
       if(product){
         return product.stripePriceId;
-      }
-       return `No product with this id: ${productId}`;
-      }
-     catch{
-      return "Product not found!";
-    }   
+      } 
   }
   
   async update(productId: number, updateProductDto: UpdateProductDto) {
