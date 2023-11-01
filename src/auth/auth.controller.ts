@@ -28,4 +28,13 @@ SignIn(@Body() signInDto: signInDto){
     const user= await this.userService.findOne(loggedInUser.username);
     return user;
   }
+
+  @ApiOperation({summary:'Verify email'})
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('verifyEmail')
+  verifyEmail(){
+    const isVerified = this.userService.verifyUnverifiedEmail();
+    return isVerified;
+  }
 }

@@ -134,7 +134,7 @@ export class UsersService {
         if(verifyedUser){
           return "Email verifyed Successfully!"
         }
-        return "Some Internal problem try later!"
+        return "Some internal problem try later!"
       }
       else{
         return "Double check your otp!"
@@ -183,6 +183,29 @@ export class UsersService {
     }
     else{
       return "Double Check Your OTP!"
+    }
+  }
+
+  async verifyUnverifiedEmail(){
+    const username= loggedInUser.username;
+    const userDetails=await this.userModel.findOne({username}).exec();
+    if(userDetails.isVerified==true){
+      throw new  BadRequestException('You are already verified!');
+    }
+    try{
+      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
+      userDetails.otp=random4DigitNumber;
+      await this.userModel.findOneAndUpdate({username},userDetails);
+      const mailOptions = {
+        from: process.env.OUT_EMAIL,
+        to:userDetails.email,
+        subject:'Verify your Email',
+        text:`Hello @${username} this is Your Verification OTP to Verify Email: ${random4DigitNumber}`,
+      };
+      await this.emailService.sendEmail(mailOptions);
+      return "Enter OTP to verify Email!"
+    }catch{
+      return "Somthing Went Wrong!"
     }
   }
 }
