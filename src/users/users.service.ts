@@ -23,9 +23,11 @@ export class UsersService {
   ){}
 
   async create(createUserDto: CreateUserDto) {
-      
+    const username=createUserDto.username.toLowerCase();
+    createUserDto.username=username;
+    const email=createUserDto.email.toLowerCase();
+    createUserDto.email=email;
     const isUserExist=await this.userModel.findOne({$or:[{username:createUserDto.username},{email:createUserDto.email}]});
-      
       if (isUserExist){
         if(createUserDto.username==isUserExist.username){
           throw new BadRequestException('username Already Exists!');
@@ -34,37 +36,39 @@ export class UsersService {
           throw new BadRequestException('Email already Exists!');
         }
       }
-        //Randon number for OTP
-        const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
-        createUserDto.otp=random4DigitNumber;
-        //Mail configuration
-        const mailOptions = {
-          from: process.env.OUR_EMAIL,
-          to:createUserDto.email,
-          subject:'Verify Your Email',
-          text:`Welcome @${createUserDto.username} this is Your Verification OTP: ${random4DigitNumber}`,
-        };
-        //Hash password
-        const saltOrRounds = 10;
-        const password = createUserDto.password;
-        const hash = await bcrypt.hash(password, saltOrRounds);
-        createUserDto.password=hash;
-        //Create Stripe Customer id
-        const userStripeId= await this.stripeService.createCustomer(createUserDto.name,createUserDto.email);
-        createUserDto.userStripeId=userStripeId;
-        //send otp to mail
-        const isMailSend= await this.emailService.sendEmail(mailOptions)
-        //Create customer account
-        //save user data to DB
-        const createdUser= await this.userModel.create(createUserDto);
-        //Token to verify later
-        const signupPayload={username:createUserDto.username, email:createUserDto.email};
-        const signupToken= await this.jwtService.signAsync(signupPayload);
-        if(createdUser){
-          return {message:"OTP send to your email", token:signupToken,}
-          //`OTP Send to your email enter to verify. Token :${signupToken}`
-        }
-        return "somthing went wrong";   
+      else{
+ //Randon number for OTP
+ const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
+ createUserDto.otp=random4DigitNumber;
+ //Mail configuration
+ const mailOptions = {
+   from: process.env.OUR_EMAIL,
+   to:createUserDto.email,
+   subject:'Verify Your Email',
+   text:`Welcome @${createUserDto.username} this is Your Verification OTP: ${random4DigitNumber}`,
+ };
+ //Hash password
+ const saltOrRounds = 10;
+ const password = createUserDto.password;
+ const hash = await bcrypt.hash(password, saltOrRounds);
+ createUserDto.password=hash;
+ //Create Stripe Customer id
+ const userStripeId= await this.stripeService.createCustomer(createUserDto.name,createUserDto.email);
+ createUserDto.userStripeId=userStripeId;
+ //send otp to mail
+ const isMailSend= await this.emailService.sendEmail(mailOptions)
+ //Create customer account
+ //save user data to DB
+ const createdUser= await this.userModel.create(createUserDto);
+ //Token to verify later
+ const signupPayload={username:createUserDto.username, email:createUserDto.email};
+ const signupToken= await this.jwtService.signAsync(signupPayload);
+ if(createdUser){
+   return {message:"OTP send to your email", token:signupToken,}
+   //`OTP Send to your email enter to verify. Token :${signupToken}`
+ }
+ return "somthing went wrong";
+    }     
   }
 
   async findAll() {

@@ -11,33 +11,33 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService,
     ) {}
 
-  @ApiOperation({ summary: 'Create Product' })
+  @ApiOperation({ summary: 'Create Product'})
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
   
-  @ApiOperation({ summary: 'Get all Product' })
+  @ApiOperation({ summary: 'Get all Product list'})
   @Get()
   findAll() {
     return this.productsService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get by productId' })
+  @ApiOperation({ summary: 'Get by productId'})
   @Get(':productId')
   findOne(@Param('productId') productId: number) {
     const productDetails= this.productsService.findByProductId(productId);
     return productDetails;
   }
 
-  @ApiOperation({ summary: 'Update Product' })
+  @ApiOperation({ summary: 'Update Product'})
   @Patch(':productId')
   update(@Param('productId') productId: number, @Body() updateProductDto: UpdateProductDto) {
     const updatedProduct=  this.productsService.update(productId, updateProductDto);
     return updatedProduct;
   }
 
-  @ApiOperation({ summary: 'Delete Product' })
+  @ApiOperation({ summary: 'Delete Product'})
   @Delete(':productId')
   remove(@Param('productId') productId: number) {
     return this.productsService.remove(productId);
