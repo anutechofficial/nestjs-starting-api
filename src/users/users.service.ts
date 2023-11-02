@@ -99,7 +99,7 @@ export class UsersService {
         EmailVerified:foundUser.isVerified,
       };
     }catch{
-      return "Somthing went wrong!"
+      return "You are Logged out ! Please Login Again!"
     }
   }
 
@@ -136,29 +136,32 @@ export class UsersService {
   async verifyOtp(userOtp:number){
     const username=loggedInUser.username;
     const userDetails= await this.userModel.findOne({username})
-    if(userDetails.isVerified==false){
-      const {otp,username}=userDetails;
-      if(userOtp===otp){
-        const verifyedUser= await this.userModel.findOneAndUpdate({username},{
-          $set: {
-            isVerified: true,
-          },
-          $unset: {
-            otp: 1,
-          },
-        });
-        if(verifyedUser){
-          return "Email verifyed Successfully!"
+    if(userDetails){
+      if(userDetails.isVerified==false){
+        const {otp,username}=userDetails;
+        if(userOtp===otp){
+          const verifyedUser= await this.userModel.findOneAndUpdate({username},{
+            $set: {
+              isVerified: true,
+            },
+            $unset: {
+              otp: 1,
+            },
+          });
+          if(verifyedUser){
+            return "Email verifyed Successfully!"
+          }
+          return "Some internal problem try later!"
         }
-        return "Some internal problem try later!"
+        else{
+          return "Double check your otp!"
+        }
       }
       else{
-        return "Double check your otp!"
+        return "Email already verifyed!"
       }
     }
-    else{
-      return "Email already verifyed!"
-    }
+    return "Somthing Went Wrong! Please Login to Verify!"
   }
 
   async changePwd(username:string){
@@ -182,53 +185,60 @@ export class UsersService {
     else{
         return `@${username} Not Found Enter correct @username`
     }
-    }catch{
-      return "Somthing Went wrong!";
+    }catch
+    {
+      return "Somthing Went Wrong! Try later!";
     }
   }
 
   async enterNewPwd(otp:number,password:string){
     const {username}=loggedInUser;
     const loggedUser= await this.userModel.findOne({username});
-    if(loggedUser.otp===otp){
-      const saltOrRounds=10;
-      const hash = await bcrypt.hash(password, saltOrRounds);
-      await this.userModel.findOneAndUpdate({username},{
-        $set: {
-          password: hash,
-        },
-        $unset: {
-          otp: 1,
-        },
-      });
-      return "Password Updated Succesfully!"
+    if(loggedUser){
+      if(loggedUser.otp===otp){
+        const saltOrRounds=10;
+        const hash = await bcrypt.hash(password, saltOrRounds);
+        await this.userModel.findOneAndUpdate({username},{
+          $set: {
+            password: hash,
+          },
+          $unset: {
+            otp: 1,
+          },
+        });
+        return "Password Updated Succesfully!"
+      }
+      else{
+        return "Invailid OTP!"
+      }
     }
-    else{
-      return "Invailid OTP!"
-    }
+   return "Somthing went Wrong! Generate OTP again!"
   }
 
   async verifyUnverifiedEmail(){
     const username= loggedInUser.username;
     const userDetails=await this.userModel.findOne({username}).exec();
-    if(userDetails.isVerified==true){
-      throw new  BadRequestException('You are already verified!');
+    if(userDetails){
+      if(userDetails.isVerified==true){
+        throw new  BadRequestException('You are already verified!');
+      }
+      try{
+        const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
+        userDetails.otp=random4DigitNumber;
+        await this.userModel.findOneAndUpdate({username},userDetails);
+        const mailOptions = {
+          from: process.env.OUR_EMAIL,
+          to:userDetails.email,
+          subject:'Verify your Email',
+          text:`Hello @${username} this is Your Verification OTP to Verify Email: ${random4DigitNumber}`,
+        };
+        await this.emailService.sendEmail(mailOptions);
+        return "Enter OTP to verify Email!"
+      }catch{
+        return "Somthing Went Wrong!"
+      }
     }
-    try{
-      const random4DigitNumber = Math.floor(1000 + Math.random() * 9000);
-      userDetails.otp=random4DigitNumber;
-      await this.userModel.findOneAndUpdate({username},userDetails);
-      const mailOptions = {
-        from: process.env.OUR_EMAIL,
-        to:userDetails.email,
-        subject:'Verify your Email',
-        text:`Hello @${username} this is Your Verification OTP to Verify Email: ${random4DigitNumber}`,
-      };
-      await this.emailService.sendEmail(mailOptions);
-      return "Enter OTP to verify Email!"
-    }catch{
-      return "Somthing Went Wrong!"
-    }
+    return 'Login Again! Somthing Went Wrong!' 
   }
 
   async createStripeAccount(email=loggedInUser.email){

@@ -4,8 +4,8 @@ import { IsPassword } from "./password.decorator";
 
 export class NewPwdDto {
     @ApiProperty()
-    // @IsNotEmpty()
-    // @IsNumber()
+    @IsNotEmpty()
+    @IsNumber()
     otp:number;
 
 

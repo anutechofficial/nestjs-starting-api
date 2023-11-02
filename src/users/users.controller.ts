@@ -35,7 +35,8 @@ export class UsersController {
   @ApiOperation({summary: 'Forget Password!'})
   @Post('forgotPassword')
   changePassword(@Body() changePwdDto:ChangePwdDto){
-    return this.usersService.changePwd(changePwdDto.username);
+    const user=changePwdDto.username.toLowerCase();
+    return this.usersService.changePwd(user);
   }
 
   @ApiOperation({summary:'Enter New Password!'})
