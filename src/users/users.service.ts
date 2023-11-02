@@ -45,7 +45,7 @@ export class UsersService {
    from: process.env.OUR_EMAIL,
    to:createUserDto.email,
    subject:'Verify Your Email',
-   text:`Welcome @${createUserDto.username} this is Your Verification OTP: ${random4DigitNumber}`,
+   text:`Welcome @${createUserDto.username} this is Your Verification OTP Valid for 5 Minutes, OTP : ${random4DigitNumber}`,
  };
  //Hash password
  const saltOrRounds = 10;
@@ -56,7 +56,7 @@ export class UsersService {
  const userStripeId= await this.stripeService.createCustomer(createUserDto.name,createUserDto.email);
  createUserDto.userStripeId=userStripeId;
  //send otp to mail
- const isMailSend= await this.emailService.sendEmail(mailOptions)
+ await this.emailService.sendEmail(mailOptions)
  //Create customer account
  //save user data to DB
  const createdUser= await this.userModel.create(createUserDto);
@@ -64,8 +64,19 @@ export class UsersService {
  const signupPayload={username:createUserDto.username, email:createUserDto.email};
  const signupToken= await this.jwtService.signAsync(signupPayload);
  if(createdUser){
-   return {message:"OTP send to your email", token:signupToken,}
-   //`OTP Send to your email enter to verify. Token :${signupToken}`
+  setTimeout(async () => {
+    const removedOtpUser = await this.userModel.findOneAndUpdate(
+      { username:createUserDto.username},
+      {
+        $unset: {
+          otp: 1,
+        },
+      },
+    );
+  }, 5 * 60 * 1000);
+   
+  return {message:"OTP send to your email! Valid for 5 Minutes!", token:signupToken,}
+   
  }
  return "somthing went wrong";
     }     
@@ -154,7 +165,7 @@ export class UsersService {
           return "Some internal problem try later!"
         }
         else{
-          return "Double check your otp!"
+          return "Invalid OTP!"
         }
       }
       else{

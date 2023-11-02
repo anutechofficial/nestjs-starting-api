@@ -51,6 +51,7 @@ export class ProductsService {
       if(product){
         return product.stripePriceId;
       } 
+      //Don't include return here
   }
   
   async update(productId: number, updateProductDto: UpdateProductDto) {
