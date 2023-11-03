@@ -56,20 +56,18 @@ export class StripeService {
     }
 
     async createAccount(email:string,){
-        const account = await this.stripe.accounts.createExternalAccount({
+        const account = await this.stripe.accounts.create({
+            
+            
             type: 'custom',
-            country: "US",
+            country: 'US',
             email: email,
-            business_type:'non_profit',
-            tos_acceptance:{
-                date:Date.now(),
-                ip:'122.173.31.170',
-            },
             capabilities: {
               card_payments: {requested: true},
               transfers: {requested: true},
             },
           });
+          console.log('chala');
           return account;
     }
     async creckoutSession(priceId:string, customerStripeId:string,quantity:number){

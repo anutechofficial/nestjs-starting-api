@@ -39,5 +39,13 @@ SignIn(@Body() signInDto: signInDto){
     const isVerified = this.userService.verifyUnverifiedEmail();
     return isVerified;
   }
+
+  @ApiOperation({summary: 'createStripeAccountA'})
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('createStripeAccountA')
+  createAccount() {
+    return this.stripeService.createAccount(loggedInUser.email);
+  }
   
 }
