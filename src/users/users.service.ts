@@ -65,7 +65,7 @@ export class UsersService {
  const signupToken= await this.jwtService.signAsync(signupPayload);
  if(createdUser){
   setTimeout(async () => {
-    const removedOtpUser = await this.userModel.findOneAndUpdate(
+    await this.userModel.findOneAndUpdate(
       { username:createUserDto.username},
       {
         $unset: {
@@ -74,11 +74,11 @@ export class UsersService {
       },
     );
   }, 5 * 60 * 1000);
-   
+
   return {message:"OTP send to your email! Valid for 5 Minutes!", token:signupToken,}
    
  }
- return "somthing went wrong";
+ return "Somthing went Wrong!";
     }     
   }
 
