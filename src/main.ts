@@ -7,8 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-  .setTitle('REST API BY NEST')
-  .setDescription('ITS A REST API')
+  .setTitle('REST API: E-commerce ')
+  .setDescription('User can signup and buy products')
   .setVersion('1.0')
   .addBearerAuth()
   .build();
