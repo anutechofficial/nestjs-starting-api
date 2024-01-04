@@ -7,13 +7,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-  .setTitle('REST API: E-commerce ')
-  .setDescription('User can signup and buy products')
-  .setVersion('1.0')
-  .addBearerAuth()
-  .build();
-const document = SwaggerModule.createDocument(app, config);
-SwaggerModule.setup('api', app, document);
+    .setTitle('REST API: E-commerce ')
+    .setDescription('User can signup and buy products')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);
 }
