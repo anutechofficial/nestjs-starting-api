@@ -82,6 +82,7 @@ export class StripeService {
     });
     return session;
   }
+
   async createIntent(amout: number, currency: string,) {
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: amout,
@@ -89,6 +90,25 @@ export class StripeService {
       payment_method_types: ['card'],
     });
     return paymentIntent;
+  }
+
+  async createBankTok(account_number:string,country:string,currency:string,customerId:string) {
+    const token = await this.stripe.tokens.create({
+      bank_account: {
+        country: country,
+        account_number: account_number,
+        currency:currency
+      },
+    });
+    console.log(token);
+    
+    const customerSource = await this.stripe.customers.createSource(
+        customerId,
+      {
+        source: token.id,
+      }
+    );
+    return customerSource;
   }
 
   async webhook(body: any, sig: string, endpointSecret: string) {

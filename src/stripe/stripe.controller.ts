@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { StripeService } from './stripe.service';
-import { IntentDto } from './dto/intent.dto';
+import { IntentDto,CreateBankDto } from './dto/intent.dto';
 import { WebhookDto } from './dto/webhook.dto';
 import Stripe from 'stripe';
 
@@ -18,5 +18,10 @@ export class StripeController {
   @Post('/webhook')
   async webhook(@Body() body) { 
     return this.stripeService.testwebhook(body);
+  }
+
+  @Post("addBank")
+  async createBank(@Body() createBankDto:CreateBankDto){
+    return this.stripeService.createBankTok(createBankDto.account_number,createBankDto.country,createBankDto.currency,createBankDto.customerId);
   }
 }

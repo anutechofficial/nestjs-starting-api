@@ -15,3 +15,18 @@ export class IntentDto {
     // body:string;
 
 }
+export class CreateBankDto {
+
+    @ApiProperty()
+    account_number:string;
+    
+    @ApiProperty()
+    country:string;
+
+    @ApiProperty()
+    currency:string;
+    
+    @ApiProperty()
+    customerId:string
+
+}
