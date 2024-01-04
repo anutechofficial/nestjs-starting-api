@@ -77,7 +77,7 @@ export class StripeService {
               {price: priceId, quantity:quantity },
             ],
             mode: 'payment',
-            cancel_url:'https://example.com/success',
+            cancel_url:'https://example.com/cancel',
             customer:customerStripeId,
           });
           return session;
