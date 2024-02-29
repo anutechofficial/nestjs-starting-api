@@ -151,7 +151,7 @@ export class StripeService {
       };
 
       const payloadString = JSON.stringify(payload, null, 2);
-      const secret = 'whsec_9cb8da3a68eb90ecebd229a807448b723b1ae1d48ac8334e84898aabd733acdc';
+      const secret = process.env.STRIPE_WEBHOOK_SECRET_KEY
 
       const header = this.stripe.webhooks.generateTestHeaderString({
         payload: payloadString,
